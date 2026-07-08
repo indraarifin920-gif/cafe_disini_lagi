@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Cafe disini Lagi</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: linear-gradient(to right, #1b5e20, #66bb6a);
+}
+
+/* TOP INFO */
+.topbar {
+    background: #1b5e20;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.topbar img {
+    width: 40px;
+    vertical-align: middle;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 20px;
+    color: white;
+}
+
+/* CONTAINER */
+.container { padding: 20px; }
+
+/* GRID */
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.item {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.item-content {
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* INPUT */
+.qty {
+    width: 60px;
+    margin: 5px auto;
+}
+
+/* BUTTON */
+.btn {
+    background: #2e7d32;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    margin-top: auto;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background: red;
+}
+
+/* CART */
+.cart {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+}
+</style>
+
+<script>
+let cart = [];
+
+function tambah(nama, harga, idQty) {
+    let qty = parseInt(document.getElementById(idQty).value);
+    if(qty <= 0) return alert("Jumlah tidak valid");
+
+    cart.push({nama, harga, qty});
+    tampilkan();
+}
+
+function hapus(index) {
+    cart.splice(index, 1);
+    tampilkan();
+}
+
+function kosongkan() {
+    cart = [];
+    tampilkan();
+}
+
+function tampilkan() {
+    let list = document.getElementById("cart");
+    list.innerHTML = "";
+    let total = 0;
+
+    cart.forEach((item, i) => {
+        let subtotal = item.harga * item.qty;
+        total += subtotal;
+
+        list.innerHTML += `
+        <div>
+        ${item.nama} (${item.qty}) = Rp ${subtotal}
+        <button onclick="hapus(${i})">❌</button>
+        </div>`;
+    });
+
+    document.getElementById("total").innerText = total;
+}
+
+function bayar() {
+    if(cart.length === 0) return alert("Keranjang kosong!");
+
+    let pesan = "Halo, saya ingin pesan:%0A";
+    let total = 0;
+
+    cart.forEach(item => {
+        let subtotal = item.harga * item.qty;
+        total += subtotal;
+        pesan += `${item.nama} (${item.qty}) - Rp ${subtotal}%0A`;
+    });
+
+    pesan += `%0ATotal: Rp ${total}`;
+
+    window.open("https://wa.me/081247565918?text=" + pesan, "_blank");
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- TOP INFO -->
+<div class="topbar">
+    <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png">
+    <b>CAFE DISINI LAGI</b> |
+    📍 ALAMAT:Jl. Manding, Polewali Mandar |
+    📱 NO WA:081247565918 |
+    📷 IG:@Disinilagi
+</div>
+
+<header>
+<h1>MENU CAFE DI SINI LAGI</h1>
+</header>
+
+<div class="container">
+
+<h2 style="color:white;">☕ Minuman</h2>
+<div class="menu">
+
+<!-- MINUMAN (5) -->
+<div class="item">
+<img src="c:\Users\HP\AppData\Local\Packages\5319275A.WhatsAppDesktop_cv1g1gvanyjgm\LocalState\sessions\CB3351F2A43BA853428D63BA4F4DD8A49547F5CE\transfers\2026-28\WhatsApp Image 2026-07-08 at 15.13.54.jpeg">
+<div class="item-content">
+<h3>Es Kopi Hitam</h3>
+<p>Rp 10.000</p>
+<input type="number" id="q1" class="qty" value="1">
+<button class="btn" onclick="tambah('Es Kopi Hitam',10000,'q1')">Tambah</button>
+</div></div>
+
+<div class="item">
+<img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\es kopi susu.jpeg">
+<div class="item-content">
+<h3>Es Kopi Susu</h3>
+<p>Rp 13.000</p>
+<input type="number" id="q2" class="qty" value="1">
+<button class="btn" onclick="tambah('Es Kopi Susu',13000,'q2')">Tambah</button>
+</div></div>
+
+<div class="item">
+<img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\kopi aren.jpeg">
+<div class="item-content">
+<h3>Kopi Aren</h3>
+<p>Rp 15.000</p>
+<input type="number" id="q3" class="qty" value="1">
+<button class="btn" onclick="tambah('Kopi Aren',15000,'q3')">Tambah</button>
+</div></div>
+
+<div class="item">
+<img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\matcha.jpeg">
+<div class="item-content">
+<h3>Matcha</h3>
+<p>Rp 20.000</p>
+<input type="number" id="q4" class="qty" value="1">
+<button class="btn" onclick="tambah('Matcha',20000,'q4')">Tambah</button>
+</div></div>
+
+<div class="item">
+<img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\taro.jpeg">
+<div class="item-content">
+<h3>Taro</h3>
+<p>Rp 10.000</p>
+<input type="number" id="q5" class="qty" value="1">
+<button class="btn" onclick="tambah('Taro',10000,'q5')">Tambah</button>
+</div></div>
+
+</div>
+
+<h2 style="color:white;">🍽️ Makanan</h2>
+<div class="menu">
+
+<!-- MAKANAN (5) -->
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Mie Goreng.jpeg"><div class="item-content"><h3>Nasi Goreng</h3><p>Rp 15.000</p><input type="number" id="q6" class="qty" value="1"><button class="btn" onclick="tambah('Nasi Goreng',15000,'q6')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Rice Bowls.jpeg"><div class="item-content"><h3>Rice Bowls</h3><p>Rp 15.000</p><input type="number" id="q7" class="qty" value="1"><button class="btn" onclick="tambah('Burger',15000,'q7')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Gado-Gado.jpeg"><div class="item-content"><h3>Gado-Gado</h3><p>Rp 15.000</p><input type="number" id="q8" class="qty" value="1"><button class="btn" onclick="tambah('Salad',15000,'q8')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Mie Goreng.jpeg"><div class="item-content"><h3>Mie Goreng</h3><p>Rp 15.000</p><input type="number" id="q9" class="qty" value="1"><button class="btn" onclick="tambah('Mie Goreng',15000,'q9')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Ayam Geprek.jpeg"><div class="item-content"><h3>Ayam Geprek</h3><p>Rp 15.000</p><input type="number" id="q10" class="qty" value="1"><button class="btn" onclick="tambah('Ayam Geprek',15000,'q10')">Tambah</button></div></div>
+
+</div>
+
+<h2 style="color:white;">🍟 Makanan Ringan</h2>
+<div class="menu">
+
+<!-- SNACK (5) -->
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Kentang Goreng.jpeg"><div class="item-content"><h3>Kentang Goreng</h3><p>Rp 15.000</p><input type="number" id="q11" class="qty" value="1"><button class="btn" onclick="tambah('Kentang Goreng',15000,'q11')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Roti Bakar.jpeg"><div class="item-content"><h3>Roti Bakar</h3><p>Rp 13.000</p><input type="number" id="q12" class="qty" value="1"><button class="btn" onclick="tambah('Roti Bakar',13000,'q12')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Pisang Goreng.jpeg"><div class="item-content"><h3>Pisang Goreng</h3><p>Rp 10.000</p><input type="number" id="q13" class="qty" value="1"><button class="btn" onclick="tambah('Pisang Goreng',10000,'q13')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Cireng.jpeg"><div class="item-content"><h3>Cireng</h3><p>Rp 15.000</p><input type="number" id="q14" class="qty" value="1"><button class="btn" onclick="tambah('Cireng',15000,'q14')">Tambah</button></div></div>
+
+<div class="item"><img src="c:\Users\HP\OneDrive\Attachments\gambar menu web indra\Tahu Crispy.jpeg"><div class="item-content"><h3>Tahu Crispy</h3><p>Rp 15.000</p><input type="number" id="q15" class="qty" value="1"><button class="btn" onclick="tambah('Tahu Crispy',15000,'q15')">Tambah</button></div></div>
+
+</div>
+
+<!-- CART -->
+<div class="cart">
+<h2>🛒 Keranjang</h2>
+<div id="cart"></div>
+<h3>Total: Rp <span id="total">0</span></h3>
+<button class="btn" onclick="bayar()">Bayar via WhatsApp</button>
+<button class="btn btn-danger" onclick="kosongkan()">Batalkan Semua</button>
+</div>
+
+</div>
+
+</body>
+</html>
