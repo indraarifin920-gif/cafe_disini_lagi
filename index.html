@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cafe Disini Lagi — Menu & Pesan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coffee: #2B1B14;
+    --coffee-2: #3E2A1E;
+    --paper: #F3E9D6;
+    --paper-2: #EADFC7;
+    --gold: #C89B3C;
+    --olive: #4A5D3A;
+    --ink: #241811;
+    --rule: rgba(36,24,17,0.18);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.025) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.025) 0, transparent 40%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  header.hero{
+    background:var(--coffee);
+    color:var(--paper);
+    padding:64px 24px 48px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0;
+    height:14px;
+    background:repeating-linear-gradient(90deg, var(--paper) 0 14px, transparent 14px 28px);
+    opacity:0.06;
+  }
+  .hero-inner{ max-width:760px; margin:0 auto; text-align:center; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:0.22em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:18px;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(42px, 9vw, 76px); line-height:1.02; letter-spacing:-0.01em;
+  }
+  .hero h1 em{ font-style:italic; font-weight:500; color:var(--gold); }
+  .hero p.tagline{
+    margin-top:18px; font-size:16px; color:rgba(243,233,214,0.72);
+    max-width:440px; margin-left:auto; margin-right:auto;
+  }
+
+  .stamp{
+    width:104px; height:104px; margin:32px auto 0;
+    border:1.5px solid var(--gold); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; transform:rotate(-6deg);
+  }
+  .stamp::before{
+    content:""; position:absolute; inset:6px;
+    border:1px dashed rgba(200,155,60,0.55); border-radius:50%;
+  }
+  .stamp span{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--gold);
+    text-align:center; line-height:1.5;
+  }
+
+  nav.cats{
+    position:sticky; top:0; z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    display:flex; justify-content:center; gap:4px;
+    padding:14px 16px; flex-wrap:wrap;
+  }
+  nav.cats a{
+    text-decoration:none; font-family:'JetBrains Mono', monospace;
+    font-size:12.5px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:8px 14px; border-radius:100px; color:var(--ink); opacity:0.6;
+    transition:opacity 0.2s, background 0.2s;
+  }
+  nav.cats a:hover{ opacity:1; background:var(--paper-2); }
+
+  main{ max-width:760px; margin:0 auto; padding:56px 24px 120px; position:relative; z-index:1; }
+
+  section.menu-group{ margin-bottom:64px; scroll-margin-top:64px; }
+  .group-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:28px; }
+  .group-head .num{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--gold); }
+  .group-head h2{ font-family:'Fraunces', serif; font-weight:600; font-size:30px; }
+  .group-head .line{ flex:1; height:1px; background:var(--rule); }
+  .group-note{ font-size:13px; color:rgba(36,24,17,0.55); margin:-18px 0 24px; font-style:italic; }
+
+  .item{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:16px; padding:16px 0; border-bottom:1px dotted var(--rule);
+  }
+  .item:last-child{ border-bottom:none; }
+  .item-name-wrap{ flex:1; min-width:0; }
+  .item-name{ font-family:'Fraunces', serif; font-weight:500; font-size:18px; }
+  .item-desc{ font-size:13px; color:rgba(36,24,17,0.58); margin-top:3px; }
+  .item-price{
+    font-family:'JetBrains Mono', monospace; font-size:14.5px;
+    color:var(--olive); white-space:nowrap; font-weight:500;
+  }
+  .item.signature .item-name::after{ content:" ★"; color:var(--gold); font-size:13px; }
+
+  .item-right{ display:flex; align-items:center; gap:14px; }
+
+  .qty-stepper{
+    display:flex; align-items:center; gap:0;
+    border:1px solid var(--rule); border-radius:100px;
+    overflow:hidden; background:var(--paper-2);
+  }
+  .qty-stepper button{
+    background:none; border:none; width:28px; height:28px;
+    font-size:16px; color:var(--coffee); font-family:'JetBrains Mono', monospace;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.15s;
+  }
+  .qty-stepper button:hover{ background:rgba(200,155,60,0.25); }
+  .qty-stepper .qty-val{
+    min-width:20px; text-align:center; font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  .add-btn{
+    background:var(--coffee); color:var(--paper); border:none;
+    font-family:'JetBrains Mono', monospace; font-size:11.5px;
+    letter-spacing:0.05em; text-transform:uppercase;
+    padding:8px 14px; border-radius:100px;
+    transition:background 0.15s, transform 0.15s;
+  }
+  .add-btn:hover{ background:var(--coffee-2); }
+  .add-btn:active{ transform:scale(0.95); }
+  .add-btn.in-cart{ display:none; }
+
+  footer{
+    background:var(--coffee); color:rgba(243,233,214,0.72);
+    text-align:center; padding:40px 24px; font-size:13px;
+  }
+  footer .fname{ font-family:'Fraunces', serif; font-size:20px; color:var(--paper); margin-bottom:8px; }
+  footer .hours{
+    margin-top:10px; font-family:'JetBrains Mono', monospace;
+    font-size:11.5px; letter-spacing:0.05em; color:var(--gold);
+  }
+
+  /* floating cart bar */
+  .cart-bar{
+    position:fixed; left:50%; bottom:20px; transform:translate(-50%, 140%);
+    background:var(--coffee); color:var(--paper);
+    border-radius:100px; padding:12px 10px 12px 22px;
+    display:flex; align-items:center; gap:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.28);
+    z-index:30; transition:transform 0.35s cubic-bezier(.2,.9,.3,1.2);
+    max-width:calc(100% - 32px);
+  }
+  .cart-bar.show{ transform:translate(-50%, 0); }
+  .cart-bar .cart-info{ font-size:13px; }
+  .cart-bar .cart-info .count{
+    font-family:'JetBrains Mono', monospace; color:var(--gold); margin-right:8px;
+  }
+  .cart-bar .cart-total{ font-family:'JetBrains Mono', monospace; font-weight:500; }
+  .cart-bar button.view-cart{
+    background:var(--gold); color:var(--coffee); border:none;
+    font-family:'JetBrains Mono', monospace; font-size:12px;
+    letter-spacing:0.04em; text-transform:uppercase; font-weight:600;
+    padding:10px 18px; border-radius:100px; white-space:nowrap;
+  }
+
+  /* cart drawer */
+  .overlay{
+    position:fixed; inset:0; background:rgba(36,24,17,0.5);
+    opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:40;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  .drawer{
+    position:fixed; right:0; top:0; bottom:0; width:min(400px, 100%);
+    background:var(--paper); z-index:50;
+    transform:translateX(100%); transition:transform 0.35s cubic-bezier(.2,.9,.3,1);
+    display:flex; flex-direction:column;
+    box-shadow:-12px 0 30px rgba(0,0,0,0.2);
+  }
+  .drawer.show{ transform:translateX(0); }
+  .drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 24px; border-bottom:1px solid var(--rule);
+  }
+  .drawer-head h3{ font-family:'Fraunces', serif; font-size:22px; }
+  .drawer-close{
+    background:none; border:none; font-size:22px; color:var(--ink); line-height:1;
+    width:32px; height:32px; border-radius:50%; transition:background 0.15s;
+  }
+  .drawer-close:hover{ background:var(--paper-2); }
+
+  .drawer-body{ flex:1; overflow-y:auto; padding:8px 24px; }
+  .drawer-empty{
+    text-align:center; padding:60px 20px; color:rgba(36,24,17,0.5); font-size:14px;
+  }
+
+  .cart-row{
+    display:flex; align-items:center; gap:12px;
+    padding:16px 0; border-bottom:1px dotted var(--rule);
+  }
+  .cart-row-name{ flex:1; min-width:0; }
+  .cart-row-name .n{ font-family:'Fraunces', serif; font-size:16px; }
+  .cart-row-name .p{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--olive); margin-top:2px; }
+  .cart-row-remove{
+    background:none; border:none; color:rgba(36,24,17,0.4); font-size:18px;
+    padding:4px 6px; transition:color 0.15s;
+  }
+  .cart-row-remove:hover{ color:#a33; }
+
+  .drawer-foot{ border-top:1px solid var(--rule); padding:20px 24px 26px; }
+  .note-field{
+    width:100%; border:1px solid var(--rule); background:var(--paper-2);
+    border-radius:10px; padding:10px 12px; font-family:'Work Sans', sans-serif;
+    font-size:13px; resize:none; margin-bottom:14px; color:var(--ink);
+  }
+  .note-field::placeholder{ color:rgba(36,24,17,0.45); }
+  .total-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:16px;
+  }
+  .total-row .label{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.05em; text-transform:uppercase; opacity:0.6; }
+  .total-row .amt{ font-family:'Fraunces', serif; font-size:24px; font-weight:600; color:var(--olive); }
+  .checkout-btn{
+    width:100%; background:var(--olive); color:var(--paper); border:none;
+    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.05em;
+    text-transform:uppercase; font-weight:600; padding:15px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:background 0.15s;
+  }
+  .checkout-btn:hover{ background:#3d4d2e; }
+  .checkout-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .checkout-note{
+    font-size:11px; text-align:center; margin-top:10px;
+    color:rgba(36,24,17,0.45);
+  }
+
+  @media (max-width:520px){
+    header.hero{ padding:48px 20px 36px; }
+    .item-name{ font-size:16.5px; }
+    .group-head h2{ font-size:25px; }
+    .cart-bar{ padding:10px 8px 10px 18px; gap:10px; }
+    .cart-bar .cart-info{ font-size:12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .cart-bar, .drawer, .overlay{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Warung Kopi &amp; Teman Duduk</div>
+    <h1>Cafe <em>Disini</em> Lagi</h1>
+    <p class="tagline">Kopi diseduh pelan, obrolan dibiarkan lama. Pilih menu, pesan langsung dari sini.</p>
+    <div class="stamp"><span>ASLI<br>SEJAK<br>DISINI</span></div>
+  </div>
+</header>
+
+<nav class="cats">
+  <a href="#kopi">Kopi</a>
+  <a href="#nonkopi">Non-Kopi</a>
+  <a href="#makanan">Makanan</a>
+  <a href="#camilan">Camilan</a>
+</nav>
+
+<main>
+
+  <section class="menu-group" id="kopi">
+    <div class="group-head"><span class="num">01</span><h2>Kopi</h2><span class="line"></span></div>
+    <div class="group-note">Biji lokal, disangrai medium, digiling tiap pagi.</div>
+
+    <div class="item signature" data-id="kopi-susu-disini" data-name="Kopi Susu Disini" data-price="22000">
+      <div class="item-name-wrap">
+        <div class="item-name">Kopi Susu Disini</div>
+        <div class="item-desc">Racikan andalan — espresso, gula aren, susu segar</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 22.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="kopi-tubruk" data-name="Kopi Tubruk" data-price="12000">
+      <div class="item-name-wrap">
+        <div class="item-name">Kopi Tubruk</div>
+        <div class="item-desc">Diseduh langsung, gaya warung klasik</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 12.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="espresso" data-name="Espresso" data-price="15000">
+      <div class="item-name-wrap">
+        <div class="item-name">Espresso</div>
+        <div class="item-desc">Single origin, single shot</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 15.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="cappuccino" data-name="Cappuccino" data-price="20000">
+      <div class="item-name-wrap">
+        <div class="item-name">Cappuccino</div>
+        <div class="item-desc">Foam tebal, taburan kayu manis</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 20.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="es-kopi-kelapa" data-name="Es Kopi Kelapa" data-price="24000">
+      <div class="item-name-wrap">
+        <div class="item-name">Es Kopi Kelapa</div>
+        <div class="item-desc">Espresso, air kelapa muda, sedikit gula</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 24.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-group" id="nonkopi">
+    <div class="group-head"><span class="num">02</span><h2>Non-Kopi</h2><span class="line"></span></div>
+
+    <div class="item" data-id="teh-tarik" data-name="Teh Tarik" data-price="16000">
+      <div class="item-name-wrap">
+        <div class="item-name">Teh Tarik</div>
+        <div class="item-desc">Manis pas, ditarik tinggi</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 16.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="matcha-latte" data-name="Matcha Latte" data-price="23000">
+      <div class="item-name-wrap">
+        <div class="item-name">Matcha Latte</div>
+        <div class="item-desc">Matcha grade ceremonial, susu segar</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 23.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="cokelat-hangat" data-name="Cokelat Hangat" data-price="20000">
+      <div class="item-name-wrap">
+        <div class="item-name">Cokelat Hangat</div>
+        <div class="item-desc">Dark chocolate 60%</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 20.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="jeruk-nipis" data-name="Air Jeruk Nipis Segar" data-price="15000">
+      <div class="item-name-wrap">
+        <div class="item-name">Air Jeruk Nipis Segar</div>
+        <div class="item-desc">Jeruk nipis peras, madu</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 15.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-group" id="makanan">
+    <div class="group-head"><span class="num">03</span><h2>Makanan</h2><span class="line"></span></div>
+
+    <div class="item signature" data-id="nasi-goreng-disini" data-name="Nasi Goreng Disini" data-price="28000">
+      <div class="item-name-wrap">
+        <div class="item-name">Nasi Goreng Disini</div>
+        <div class="item-desc">Telur mata sapi, kerupuk, acar</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 28.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="mie-goreng-jawa" data-name="Mie Goreng Jawa" data-price="25000">
+      <div class="item-name-wrap">
+        <div class="item-name">Mie Goreng Jawa</div>
+        <div class="item-desc">Bumbu rempah, sayur segar</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 25.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="roti-bakar" data-name="Roti Bakar Cokelat Keju" data-price="18000">
+      <div class="item-name-wrap">
+        <div class="item-name">Roti Bakar Cokelat Keju</div>
+        <div class="item-desc">Roti tebal, isi melimpah</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 18.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="sandwich-ayam" data-name="Sandwich Ayam Panggang" data-price="27000">
+      <div class="item-name-wrap">
+        <div class="item-name">Sandwich Ayam Panggang</div>
+        <div class="item-desc">Ayam panggang, selada, saus rumahan</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 27.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-group" id="camilan">
+    <div class="group-head"><span class="num">04</span><h2>Camilan</h2><span class="line"></span></div>
+
+    <div class="item" data-id="pisang-goreng" data-name="Pisang Goreng Madu" data-price="14000">
+      <div class="item-name-wrap">
+        <div class="item-name">Pisang Goreng Madu</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 14.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="kentang-goreng" data-name="Kentang Goreng" data-price="16000">
+      <div class="item-name-wrap">
+        <div class="item-name">Kentang Goreng</div>
+        <div class="item-desc">Saus sambal &amp; mayones</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 16.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="item" data-id="tahu-crispy" data-name="Tahu Crispy" data-price="13000">
+      <div class="item-name-wrap">
+        <div class="item-name">Tahu Crispy</div>
+        <div class="item-desc">Bumbu bawang, sambal kecap</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">Rp 13.000</div>
+        <button class="add-btn">+ Tambah</button>
+        <div class="qty-stepper" style="display:none;">
+          <button class="minus">−</button>
+          <span class="qty-val">1</span>
+          <button class="plus">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="fname">Cafe Disini Lagi</div>
+  <div>Datang lagi, duduk lagi, ngopi lagi.</div>
+  <div class="hours">SENIN–MINGGU · 08.00–22.00</div>
+</footer>
+
+<!-- floating cart bar -->
+<div class="cart-bar" id="cartBar">
+  <div class="cart-info"><span class="count" id="cartCount">0 item</span><span class="cart-total" id="cartTotalMini">Rp 0</span></div>
+  <button class="view-cart" id="openCart">Lihat Pesanan</button>
+</div>
+
+<!-- overlay + drawer -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Pesanan Kamu</h3>
+    <button class="drawer-close" id="closeCart">×</button>
+  </div>
+  <div class="drawer-body" id="cartBody">
+    <div class="drawer-empty">Keranjang masih kosong.<br>Pilih menu favoritmu dulu ☕</div>
+  </div>
+  <div class="drawer-foot">
+    <textarea class="note-field" id="orderNote" rows="2" placeholder="Catatan (contoh: kurang manis, dine-in meja 3)"></textarea>
+    <div class="total-row">
+      <span class="label">Total</span>
+      <span class="amt" id="cartTotal">Rp 0</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>Pesan via WhatsApp</button>
+    <div class="checkout-note">Pesanan dikirim ke WhatsApp cafe untuk dikonfirmasi</div>
+  </div>
+</div>
+
+<script>
+  // ==== GANTI nomor WhatsApp cafe di sini (format: kode negara tanpa + atau 0 di depan) ====
+  const CAFE_WHATSAPP_NUMBER = "6281234567890";
+
+  const cart = {}; // { id: { name, price, qty } }
+  const items = document.querySelectorAll('.item[data-id]');
+
+  const cartBar = document.getElementById('cartBar');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotalMini = document.getElementById('cartTotalMini');
+  const cartTotal = document.getElementById('cartTotal');
+  const cartBody = document.getElementById('cartBody');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const orderNote = document.getElementById('orderNote');
+
+  function formatRp(n){
+    return "Rp " + n.toLocaleString('id-ID');
+  }
+
+  function setItemUI(itemEl, qty){
+    const addBtn = itemEl.querySelector('.add-btn');
+    const stepper = itemEl.querySelector('.qty-stepper');
+    const qtyVal = itemEl.querySelector('.qty-val');
+    if(qty > 0){
+      addBtn.style.display = 'none';
+      stepper.style.display = 'flex';
+      qtyVal.textContent = qty;
+    } else {
+      addBtn.style.display = 'inline-flex';
+      stepper.style.display = 'none';
+    }
+  }
+
+  function updateCart(id, delta, itemEl){
+    const name = itemEl.dataset.name;
+    const price = parseInt(itemEl.dataset.price, 10);
+    if(!cart[id]) cart[id] = { name, price, qty: 0 };
+    cart[id].qty += delta;
+    if(cart[id].qty <= 0){
+      delete cart[id];
+      setItemUI(itemEl, 0);
+    } else {
+      setItemUI(itemEl, cart[id].qty);
+    }
+    renderSummary();
+  }
+
+  items.forEach(itemEl => {
+    const id = itemEl.dataset.id;
+    const addBtn = itemEl.querySelector('.add-btn');
+    const minus = itemEl.querySelector('.minus');
+    const plus = itemEl.querySelector('.plus');
+
+    addBtn.addEventListener('click', () => updateCart(id, 1, itemEl));
+    plus.addEventListener('click', () => updateCart(id, 1, itemEl));
+    minus.addEventListener('click', () => updateCart(id, -1, itemEl));
+  });
+
+  function renderSummary(){
+    const ids = Object.keys(cart);
+    const totalQty = ids.reduce((s, id) => s + cart[id].qty, 0);
+    const totalPrice = ids.reduce((s, id) => s + cart[id].qty * cart[id].price, 0);
+
+    cartCount.textContent = totalQty + (totalQty === 1 ? ' item' : ' item');
+    cartTotalMini.textContent = formatRp(totalPrice);
+    cartTotal.textContent = formatRp(totalPrice);
+
+    if(totalQty > 0){
+      cartBar.classList.add('show');
+    } else {
+      cartBar.classList.remove('show');
+    }
+
+    checkoutBtn.disabled = totalQty === 0;
+
+    if(ids.length === 0){
+      cartBody.innerHTML = '<div class="drawer-empty">Keranjang masih kosong.<br>Pilih menu favoritmu dulu ☕</div>';
+      return;
+    }
+
+    cartBody.innerHTML = ids.map(id => {
+      const it = cart[id];
+      return `
+        <div class="cart-row" data-row-id="${id}">
+          <div class="cart-row-name">
+            <div class="n">${it.name}</div>
+            <div class="p">${it.qty} × ${formatRp(it.price)}</div>
+          </div>
+          <div class="qty-stepper">
+            <button class="minus" data-id="${id}">−</button>
+            <span class="qty-val">${it.qty}</span>
+            <button class="plus" data-id="${id}">+</button>
+          </div>
+          <button class="cart-row-remove" data-id="${id}" title="Hapus">×</button>
+        </div>
+      `;
+    }).join('');
+
+    cartBody.querySelectorAll('.plus').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const itemEl = document.querySelector(`.item[data-id="${id}"]`);
+        updateCart(id, 1, itemEl);
+      });
+    });
+    cartBody.querySelectorAll('.minus').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const itemEl = document.querySelector(`.item[data-id="${id}"]`);
+        updateCart(id, -1, itemEl);
+      });
+    });
+    cartBody.querySelectorAll('.cart-row-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const itemEl = document.querySelector(`.item[data-id="${id}"]`);
+        delete cart[id];
+        setItemUI(itemEl, 0);
+        renderSummary();
+      });
+    });
+  }
+
+  document.getElementById('openCart').addEventListener('click', () => {
+    drawer.classList.add('show');
+    overlay.classList.add('show');
+  });
+  document.getElementById('closeCart').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  function closeDrawer(){
+    drawer.classList.remove('show');
+    overlay.classList.remove('show');
+  }
+
+  checkoutBtn.addEventListener('click', () => {
+    const ids = Object.keys(cart);
+    if(ids.length === 0) return;
+
+    let msg = "Halo Cafe Disini Lagi, saya mau pesan:%0A%0A";
+    let total = 0;
+    ids.forEach(id => {
+      const it = cart[id];
+      const subtotal = it.qty * it.price;
+      total += subtotal;
+      msg += `• ${it.name} x${it.qty} — ${formatRp(subtotal)}%0A`;
+    });
+    msg += `%0ATotal: ${formatRp(total)}`;
+
+    const note = orderNote.value.trim();
+    if(note){
+      msg += `%0A%0ACatatan: ${encodeURIComponent(note)}`;
+    }
+
+    const waUrl = `https://wa.me/${CAFE_WHATSAPP_NUMBER}?text=${msg}`;
+    window.open(waUrl, '_blank');
+  });
+</script>
+
+</body>
+</html>
